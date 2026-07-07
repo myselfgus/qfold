@@ -1,5 +1,5 @@
 /**
- * Dispatch integration for Twin-User outbound + per-user isolation.
+ * Dispatch integration for Qfold outbound + per-user isolation.
  * Works with Workers for Platforms (untrusted dispatch namespaces).
  */
 
@@ -8,9 +8,9 @@ export async function dispatchOutbound(
   dispatchNs: any, 
   _ctx: ExecutionContext
 ): Promise<Response> {
-  const dispatchKey = request.headers.get('x-twin-user-id') || 
-                      request.headers.get('x-twin-user-sub') || 
-                      'default-twin';
+  const dispatchKey = request.headers.get('x-qfold-id') || 
+                      request.headers.get('x-qfold-sub') || 
+                      'default-qfold';
 
   try {
     const worker = dispatchNs.get(dispatchKey);

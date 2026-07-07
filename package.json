@@ -1,18 +1,18 @@
 {
-  "name": "twin-user-identity",
+  "name": "qfold",
   "version": "0.1.0",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "wrangler dev",
     "deploy": "wrangler deploy --env production",
-    "deploy:outbound": "wrangler deploy src/outbound-worker.ts --name twin-user-outbound --env production",
+    "deploy:outbound": "wrangler deploy src/outbound-worker.ts --name qfold-outbound --env production",
     "deploy:dispatch": "wrangler deploy --env production",
     "tail": "wrangler tail --env production",
     "typecheck": "tsc --noEmit",
-    "d1:migrate:local": "wrangler d1 migrations apply twin-user-db --local",
-    "d1:migrate:prod": "wrangler d1 migrations apply twin-user-db --env production",
-    "d1:migrate:audit:prod": "wrangler d1 migrations apply twin-user-audit --env production"
+    "d1:migrate:local": "wrangler d1 migrations apply qfold-db --local",
+    "d1:migrate:prod": "wrangler d1 migrations apply qfold-db --env production",
+    "d1:migrate:audit:prod": "wrangler d1 migrations apply qfold-audit --env production"
   },
   "dependencies": {
     "@cloudflare/workers-oauth-provider": "^0.0.2",

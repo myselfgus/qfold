@@ -5,5 +5,5 @@ export async function createPairwiseSubject(
   sectorOrClientId: string,
   secret?: string
 ): Promise<string> {
-  return createPairwise(userId, sectorOrClientId, secret || 'twin-user-pairwise-secret');
+  return createPairwise(userId, sectorOrClientId, secret || 'qfold-pairwise-secret');
 }

@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { encryptAESGCM, deriveKeyFromPRF, signJWT } from './utils/crypto';
 import type { Env } from './types';
 
-// Types for Twin-User features
+// Types for Qfold features
 interface WebAuthnPRFResult {
   key: Uint8Array;
   salt: Uint8Array;
@@ -29,7 +29,7 @@ export class McpAgent extends DurableObject {
     
     // MCP Server setup (ACP via custom tools)
     this.mcpServer = new McpServer({
-      name: "twin-user-mcp",
+      name: "qfold-mcp",
       version: "1.0.0",
     });
     
@@ -100,11 +100,11 @@ export class McpAgent extends DurableObject {
     if (this.env.OUTBOUND) {
       // Route through the dedicated outbound worker for SSRF protection, sanitization, and allow-listing
       const req = new Request(url, init);
-      // Tag it so outbound worker knows it's from a Twin-User agent
+      // Tag it so outbound worker knows it's from a Qfold agent
       const tagged = new Request(req, {
         headers: {
           ...Object.fromEntries(req.headers),
-          'x-twin-user-id': this.ctx.id.name || 'unknown',
+          'x-qfold-id': this.ctx.id.name || 'unknown',
           'x-from-mcp-agent': 'true'
         }
       });
@@ -120,8 +120,8 @@ export class McpAgent extends DurableObject {
     return signJWT(
       {
         sub: claims.sub,
-        iss: env.OAUTH_ISSUER || 'https://identity.twin-user.com',
-        aud: claims.aud || 'twin-user-client',
+        iss: env.OAUTH_ISSUER || 'https://identity.qfold.com',
+        aud: claims.aud || 'qfold-client',
         ...claims,
       },
       env.JWT_SECRET || 'dev-secret',
@@ -188,7 +188,7 @@ export class McpAgent extends DurableObject {
     // MCP Tool: OIDC issuance (real signed JWT)
     this.mcpServer.tool(
       'issue_oidc_token',
-      'Issue signed OIDC/ID token for the Twin-User',
+      'Issue signed OIDC/ID token for the Qfold user',
       {
         userId: z.string(),
         additionalClaims: z.record(z.any()).optional()
@@ -309,7 +309,7 @@ export class McpAgent extends DurableObject {
       return new Response('Hibernated successfully', { status: 200 });
     }
 
-    // Internal bootstrap for new Twin-User (called by provision)
+    // Internal bootstrap for new Qfold identity (called by provision)
     if (url.pathname === '/internal/bootstrap' && request.method === 'POST') {
       try {
         const body = await request.json() as any;

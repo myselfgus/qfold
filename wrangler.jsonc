@@ -1,5 +1,5 @@
 {
-  "name": "twin-user-identity",
+  "name": "qfold",
   "main": "src/index.ts",
   "compatibility_date": "2025-07-01",
   "compatibility_flags": ["nodejs_compat"],
@@ -7,11 +7,11 @@
 
   "env": {
     "production": {
-      "name": "twin-user-identity-prod",
-      // Route commented: domain identity.twin-user.com is not yet set up/proxied in Cloudflare
-      // "route": "identity.twin-user.com/*",
+      "name": "qfold",
+      // Route commented: domain identity.qfold.com is not yet set up/proxied in Cloudflare
+      // "route": "identity.qfold.com/*",
       "vars": {
-        "OAUTH_ISSUER": "https://identity.twin-user.com",
+        "OAUTH_ISSUER": "https://identity.qfold.com",
         "ALLOWED_EGRESS_DOMAINS": "api.openai.com,api.anthropic.com"
       },
 
@@ -19,7 +19,7 @@
       "services": [
         {
           "binding": "OUTBOUND",
-          "service": "twin-user-outbound"
+          "service": "qfold-outbound"
         }
       ],
 
@@ -28,7 +28,7 @@
       // "dispatch_namespaces": [
       //   {
       //     "binding": "DISPATCHER",
-      //     "namespace": "twin-user-dispatch",
+      //     "namespace": "qfold-dispatch",
       //     "untrusted": true
       //   }
       // ],
@@ -40,19 +40,19 @@
       ],
 
       "r2_buckets": [
-        { "binding": "ASSETS", "bucket_name": "twin-user-assets" },
-        { "binding": "BACKUPS", "bucket_name": "twin-user-backups" }
+        { "binding": "ASSETS", "bucket_name": "qfold-assets" },
+        { "binding": "BACKUPS", "bucket_name": "qfold-backups" }
       ],
 
       "d1_databases": [
         {
           "binding": "DB",
-          "database_name": "twin-user-db",
+          "database_name": "qfold-db",
           "database_id": "679a603e-4017-47d1-aac4-5a25badde454"
         },
         {
           "binding": "AUDIT_DB",
-          "database_name": "twin-user-audit",
+          "database_name": "qfold-audit",
           "database_id": "71f3d784-f52b-480e-8451-c9df44cb4062"
         }
       ],

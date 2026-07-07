@@ -1,5 +1,5 @@
 /**
- * Central type definitions for Twin-User Identity Platform (Production)
+ * Central type definitions for Qfold Identity Platform (Production)
  */
 
 export interface Env {
@@ -25,7 +25,7 @@ export interface Env {
   AUDIT_DB: D1Database;
 
   // Configuration
-  OAUTH_ISSUER: string;           // e.g. "https://identity.twin-user.com"
+  OAUTH_ISSUER: string;           // e.g. "https://identity.qfold.com"
   OAUTH_CLIENTS: string;          // JSON string of registered clients
   JWT_SECRET: string;             // For signing (in production use private key via secret)
   ALLOWED_EGRESS_DOMAINS: string; // Comma separated

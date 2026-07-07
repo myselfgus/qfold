@@ -1,5 +1,5 @@
 /**
- * Outbound Worker for Twin-User Agents (Production)
+ * Outbound Worker for Qfold Agents (Production)
  * 
  * Responsibilities per architecture:
  * - Egress control (whitelist)
@@ -59,7 +59,7 @@ export default {
     // 4. Sanitize
     const sanitizedReq = await sanitizeRequest(request);
 
-    // 5. Route through dispatch for per-Twin-User isolation + logging
+    // 5. Route through dispatch for per-Qfold isolation + logging
     const dispatchedResponse = await dispatchOutbound(sanitizedReq, env.DISPATCHER, ctx);
 
     return sanitizeResponse(dispatchedResponse);

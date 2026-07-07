@@ -1,5 +1,5 @@
 /**
- * Production crypto utilities for Twin-User
+ * Production crypto utilities for Qfold
  * - Real Web Crypto (SubtleCrypto)
  * - JWT signing (ES256)
  * - Improved pairwise identifiers (HMAC + salt)
@@ -150,7 +150,7 @@ export async function deriveKeyFromPRF(credentialId: string, prfOutput: Uint8Arr
   );
 
   const saltBuffer = prfOutput.buffer.slice(prfOutput.byteOffset, prfOutput.byteOffset + prfOutput.byteLength) as ArrayBuffer;
-  const infoBuffer = encoder.encode('twin-user-master-key').buffer as ArrayBuffer;
+  const infoBuffer = encoder.encode('qfold-master-key').buffer as ArrayBuffer;
 
   const derived = await crypto.subtle.deriveBits(
     {

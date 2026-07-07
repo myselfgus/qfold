@@ -1,4 +1,15 @@
-# Twin-User — Identidade Federada AI-Native na Cloudflare
+# Qfold — Identidade Federada AI-Native na Cloudflare
+
+<p align="center">
+  <img src="qfold.PNG" alt="Qfold Logo" width="420" />
+</p>
+
+<p align="center">
+  <a href="https://developers.cloudflare.com/workers/"><img src="https://img.shields.io/badge/Cloudflare-Workers-F38020?style=for-the-badge&logo=cloudflare&logoColor=white" alt="Cloudflare Workers"></a>
+  <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-5.5-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript"></a>
+  <a href="https://github.com/"><img src="https://img.shields.io/badge/GitHub-Ready-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub"></a>
+  <img src="https://img.shields.io/badge/Qfold-Identity%20Platform-6366f1?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMTIgMkM2LjQ4IDIgMiA2LjQ4IDIgMTJzNC40OCAxMCAxMCAxMCAxMC00LjQ4IDEwLTEwUzE3LjUyIDIgMTIgMnoiIGZpbGw9IiM2MzY2ZjEiLz48L3N2Zz4=" alt="Qfold">
+</p>
 
 > **Cada usuário = um agente vivo, isolado e soberano.**
 
@@ -8,13 +19,13 @@ Sistema de identidade universal baseado em **Cloudflare Workers + Durable Object
 
 **Deployed e funcionando:**
 
-- **Main Worker**: https://twin-user-identity-prod.voither.workers.dev
-- **Outbound Worker** (egress seguro): https://twin-user-outbound.voither.workers.dev
+- **Main Worker**: https://qfold.voither.workers.dev
+- **Outbound Worker** (egress seguro): https://qfold-outbound.voither.workers.dev
 
 Recursos provisionados:
 - KV Namespaces (Sessions, Profiles, Rate Limits)
-- R2 Buckets (Assets, Backups)
-- D1 Databases (twin-user-db + twin-user-audit) com schema aplicado
+- R2 Buckets (qfold-assets, qfold-backups)
+- D1 Databases (qfold-db + qfold-audit) com schema aplicado
 - Durable Objects (McpAgent + UserDurableObject)
 - Service Binding para Outbound
 - JWT Secret configurado
@@ -25,11 +36,12 @@ Recursos provisionados:
 
 ## Visão Geral da Arquitetura
 
-O sistema transforma cada identidade registrada em um **Twin-User**: um agente computacional autônomo, com sua própria memória (SQLite + R2), chaves criptográficas derivadas via WebAuthn PRF, e capacidade de atuar como seu próprio Identity Provider (OIDC) de forma pairwise.
+O sistema transforma cada identidade registrada em um **Qfold Identity**: um agente computacional autônomo, com sua própria memória (SQLite + R2), chaves criptográficas derivadas via WebAuthn PRF, e capacidade de atuar como seu próprio Identity Provider (OIDC) de forma pairwise.
 
 ### Diagrama de Componentes (Alto Nível)
 
 ```mermaid
+%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#6366f1", "primaryTextColor": "#ffffff", "primaryBorderColor": "#4f46e5", "lineColor": "#22d3ee", "secondaryColor": "#0f172a", "tertiaryColor": "#1e2937"}}}%%
 graph TD
     subgraph "Cliente / Dispositivo"
         A[Browser + WebAuthn + PRF]
@@ -41,7 +53,7 @@ graph TD
         D[Outbound Worker<br/>Egress Control]
     end
 
-    subgraph "Storage por Twin-User"
+    subgraph "Storage por Qfold"
         E[SQLite (DO local)]
         F[R2 Assets / Backups]
         G[KV Sessions]
@@ -61,6 +73,45 @@ graph TD
     C --> F
     B --> G
     C --> H
+```
+
+### Arquitetura com Cores da Marca Qfold
+
+```mermaid
+%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#6366f1", "primaryTextColor": "#fff", "lineColor": "#a855f7", "secondaryColor": "#22d3ee"}}}%%
+flowchart TB
+    subgraph Client ["Cliente"]
+        WebAuthn["WebAuthn + PRF"]
+    end
+
+    subgraph Edge ["Qfold Edge"]
+        Dispatcher["Dispatcher<br/>Qfold"]
+        Agent["McpAgent DO"]
+        Outbound["Outbound<br/>Egress"]
+    end
+
+    WebAuthn --> Dispatcher
+    Dispatcher --> Agent
+    Agent --> Outbound
+    Outbound --> External["External MCP / APIs"]
+    Agent -.->|SQLite| Storage["Qfold Storage"]
+```
+
+### Fluxo de Provisionamento Qfold (Estilizado)
+
+```mermaid
+%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#6366f1", "primaryBorderColor": "#22d3ee", "lineColor": "#a855f7"}}}%%
+sequenceDiagram
+    autonumber
+    participant User
+    participant Dispatcher
+    participant DO as Qfold Agent DO
+
+    User->>Dispatcher: /webauthn/register (PRF)
+    Dispatcher->>DO: Create named DO + store PRF
+    DO->>DO: Derive Master Key (HKDF)
+    DO-->>Dispatcher: Qfold ID + pairwise_sub
+    Dispatcher-->>User: Identity ready
 ```
 
 ### Fluxo Completo de Registro (WebAuthn + Criação do Twin)
@@ -89,7 +140,7 @@ sequenceDiagram
     participant RP as Relying Party (SaaS)
     participant U as Usuário
     participant D as Dispatcher
-    participant DO as McpAgent (Twin-User)
+    participant DO as McpAgent (Qfold)
 
     RP->>U: Inicia login com sua identidade
     U->>D: /authorize + PKCE
@@ -174,7 +225,7 @@ sequenceDiagram
 ## Estrutura do Projeto
 
 ```
-twin-user/
+qfold/
 ├── src/
 │   ├── index.ts                 # Dispatcher + OIDC endpoints + routing
 │   ├── McpAgent.ts              # Agente principal (DO + MCP tools + crypto)
@@ -238,7 +289,7 @@ npm run deploy
 - **Zero-Knowledge**: Chave mestra derivada no dispositivo via WebAuthn PRF. Cloudflare nunca vê a chave.
 - **Pairwise Subjects**: Impossível correlacionar identidade entre diferentes SaaS.
 - **Egress Control**: Todo tráfego externo passa pelo Outbound Worker (SSRF + allow-list + remoção de headers sensíveis).
-- **Isolamento**: Cada Twin-User tem seu próprio Durable Object + SQLite.
+- **Isolamento**: Cada Qfold tem seu próprio Durable Object + SQLite.
 - **Hibernação**: Custo marginal zero quando o agente está ocioso.
 
 ---
@@ -266,7 +317,7 @@ flowchart TD
     PRF --> Derive[Deriva master key no cliente]
     Derive --> Token[Dispatcher emite JWT pairwise]
     Token --> RP[RP recebe ID Token]
-    RP --> DO[Chama /mcp do Twin-User]
+    RP --> DO[Chama /mcp do Qfold]
     DO -->|safe_egress| Outbound
     Outbound --> External[API externa]
 ```
@@ -277,7 +328,7 @@ flowchart TD
 
 - [ ] Habilitar Workers for Platforms + Dispatch Namespace real
 - [ ] Suporte completo a `workers-oauth-provider`
-- [ ] Custom domain + rota `identity.twin-user.com`
+- [ ] Custom domain + rota `identity.qfold.com`
 - [ ] Mais ferramentas MCP (RAG local, memory tools, ACP real)
 - [ ] UI de gerenciamento de identidades
 - [ ] Testes de integração + load test com hibernação

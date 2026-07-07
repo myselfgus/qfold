@@ -1,12 +1,12 @@
 /**
- * Identity provisioning helpers for Twin-User
+ * Identity provisioning helpers for Qfold
  */
 
 import type { Env } from '../types';
 import { createPairwiseSubject } from './pairwise';
 
 /**
- * Create a new Twin-User identity.
+ * Create a new Qfold identity.
  * In production this is called after successful WebAuthn registration.
  */
 export async function provisionTwinUser(
@@ -14,7 +14,7 @@ export async function provisionTwinUser(
   userId: string,
   metadata?: Record<string, any>
 ): Promise<{ sub: string; doId: string }> {
-  const pairwiseSub = await createPairwiseSubject(userId, 'twin-user-internal', env.JWT_SECRET);
+  const pairwiseSub = await createPairwiseSubject(userId, 'qfold-internal', env.JWT_SECRET);
 
   // Instantiate the McpAgent DO for this user (named DO)
   const stub = env.MCP_AGENT.getByName(pairwiseSub);

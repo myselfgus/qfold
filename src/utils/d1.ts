@@ -1,5 +1,5 @@
 /**
- * D1 schema utilities for Twin-User (production)
+ * D1 schema utilities for Qfold (production)
  * Idempotent table creation for the shared D1 databases.
  */
 

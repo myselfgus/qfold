@@ -1,4 +1,4 @@
-# Twin-User Identity — Production Deployment on Cloudflare
+# Qfold — Production Deployment on Cloudflare
 
 This is the production implementation of the architecture described in "Arquitetura Identidade Cloudflare AI.pdf".
 
@@ -16,7 +16,7 @@ This is the production implementation of the architecture described in "Arquitet
 ## Prerequisites
 - Cloudflare account with Workers, D1, KV, R2, Durable Objects enabled
 - wrangler authenticated (`wrangler login`)
-- Domain (optional): identity.twin-user.com
+- Domain (optional): identity.qfold.com
 
 ## Step 1: Create Cloudflare Resources (Production)
 
@@ -62,7 +62,7 @@ npm run deploy
 ## Step 4: (Optional) Deploy dedicated Outbound Worker
 
 ```bash
-wrangler deploy src/outbound-worker.ts --name twin-user-outbound --env production
+wrangler deploy src/outbound-worker.ts --name qfold-outbound --env production
 ```
 
 Then bind it in wrangler.jsonc under the production env.
@@ -76,18 +76,18 @@ Then bind it in wrangler.jsonc under the production env.
 ## Current Limitations vs Full Architecture (PDF)
 - Workers for Platforms + untrusted Dispatch Namespace requires enabling Workers for Platforms on the account.
 - When enabled, uncomment the dispatch_namespaces section, recreate the namespace, and redeploy.
-- Custom domain `identity.twin-user.com` needs to be added to the zone and the route re-enabled.
+- Custom domain `identity.qfold.com` needs to be added to the zone and the route re-enabled.
 
 ## Live Production Deployment (current)
 
-- Main Worker: https://twin-user-identity-prod.voither.workers.dev
-- Outbound Worker: https://twin-user-outbound.voither.workers.dev
+- Main Worker: https://qfold.voither.workers.dev
+- Outbound Worker: https://qfold-outbound.voither.workers.dev
 
 ## Endpoints (after deploy)
 - `GET /.well-known/openid-configuration`
 - `POST /token`
 - `GET /userinfo`
-- `GET /mcp` (per Twin-User)
+- `GET /mcp` (per Qfold)
 - `POST /agent/{userId}` (via Dispatch Namespace - requires Workers for Platforms)
 - `POST /webauthn/challenge`
 - `POST /webauthn/register`

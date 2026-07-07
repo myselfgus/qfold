@@ -13,7 +13,7 @@ function corsHeaders(origin = '*') {
   return {
     'Access-Control-Allow-Origin': origin,
     'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization, x-twin-user-sub',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, x-qfold-sub',
     'Access-Control-Max-Age': '86400',
   };
 }
@@ -29,7 +29,7 @@ function withCORS(response: Response, origin = '*'): Response {
 }
 
 /**
- * Twin-User Identity Platform - Production Dispatcher + OIDC Provider
+ * Qfold - Production Dispatcher + OIDC Provider
  *
  * Responsibilities:
  * - OIDC / OAuth2.1 entrypoint (discovery, authorize, token, userinfo, jwks)
@@ -81,7 +81,7 @@ export default {
           kty: 'oct',
           use: 'sig',
           alg: 'HS256',
-          kid: 'twin-user-1'
+          kid: 'qfold-1'
         }]
       }), { headers: { 'Content-Type': 'application/json' } });
     }
@@ -168,9 +168,9 @@ export default {
       return withCORS(res);
     }
 
-    // === MCP / ACP entrypoint (per Twin-User) ===
+    // === MCP / ACP entrypoint (per Qfold) ===
     if (pathname.startsWith('/mcp') || pathname.startsWith('/acp')) {
-      const sub = url.searchParams.get('sub') || request.headers.get('x-twin-user-sub');
+      const sub = url.searchParams.get('sub') || request.headers.get('x-qfold-sub');
       if (!sub) {
         return new Response('Missing user identity (sub)', { status: 400 });
       }
@@ -225,7 +225,7 @@ export default {
       }), { headers: { 'Content-Type': 'application/json' } }));
     }
 
-    // === WebAuthn Complete Registration (creates the Twin-User) ===
+    // === WebAuthn Complete Registration (creates the Qfold identity) ===
     if (pathname === '/webauthn/register' && request.method === 'POST') {
       try {
         const body = await request.json() as any;
@@ -251,14 +251,14 @@ export default {
         return withCORS(new Response(JSON.stringify({
           success: true,
           pairwise_sub: sub,
-          message: 'Twin-User identity created via WebAuthn'
+          message: 'Qfold identity created via WebAuthn'
         })));
       } catch (err: any) {
         return withCORS(new Response(JSON.stringify({ error: err.message }), { status: 400 }));
       }
     }
 
-    // === Provision new Twin-User identity (called after WebAuthn registration) ===
+    // === Provision new Qfold identity (called after WebAuthn registration) ===
     if (pathname === '/provision' && request.method === 'POST') {
       try {
         const body = await request.json() as any;
@@ -272,7 +272,7 @@ export default {
         return withCORS(new Response(JSON.stringify({
           success: true,
           pairwise_sub: sub,
-          message: 'Twin-User agent instantiated'
+          message: 'Qfold agent instantiated'
         })));
       } catch (err: any) {
         return withCORS(new Response(JSON.stringify({ error: err.message }), { status: 400 }));
@@ -292,7 +292,7 @@ export default {
     // === Default: Health + info ===
     if (pathname === '/' || pathname === '/health') {
       return withCORS(new Response(JSON.stringify({
-        service: 'Twin-User Identity Platform',
+        service: 'Qfold',
         version: '1.0.0',
         status: 'production-ready',
         architecture: 'User-as-Agent + Zero-Knowledge + Pairwise OIDC',

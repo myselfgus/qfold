@@ -1,5 +1,5 @@
--- Twin-User Identity Platform - Initial D1 Schema
--- Run with: wrangler d1 migrations apply twin-user-db --env production
+-- Qfold Identity Platform - Initial D1 Schema
+-- Run with: wrangler d1 migrations apply qfold-db --env production
 
 -- Core users / identities (high level records, actual state is in per-user DO SQLite)
 CREATE TABLE IF NOT EXISTS users (
