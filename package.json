@@ -1,0 +1,27 @@
+{
+  "name": "twin-user-identity",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy --env production",
+    "deploy:outbound": "wrangler deploy src/outbound-worker.ts --name twin-user-outbound --env production",
+    "deploy:dispatch": "wrangler deploy --env production",
+    "tail": "wrangler tail --env production",
+    "typecheck": "tsc --noEmit",
+    "d1:migrate:local": "wrangler d1 migrations apply twin-user-db --local",
+    "d1:migrate:prod": "wrangler d1 migrations apply twin-user-db --env production",
+    "d1:migrate:audit:prod": "wrangler d1 migrations apply twin-user-audit --env production"
+  },
+  "dependencies": {
+    "@cloudflare/workers-oauth-provider": "^0.0.2",
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20240701.0",
+    "wrangler": "^3.114.17",
+    "typescript": "^5.5.0"
+  }
+}

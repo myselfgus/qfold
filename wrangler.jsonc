@@ -1,0 +1,79 @@
+{
+  "name": "twin-user-identity",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-07-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "tsconfig": "tsconfig.json",
+
+  "env": {
+    "production": {
+      "name": "twin-user-identity-prod",
+      // Route commented: domain identity.twin-user.com is not yet set up/proxied in Cloudflare
+      // "route": "identity.twin-user.com/*",
+      "vars": {
+        "OAUTH_ISSUER": "https://identity.twin-user.com",
+        "ALLOWED_EGRESS_DOMAINS": "api.openai.com,api.anthropic.com"
+      },
+
+      // Bind the outbound security worker (egress control, SSRF protection)
+      "services": [
+        {
+          "binding": "OUTBOUND",
+          "service": "twin-user-outbound"
+        }
+      ],
+
+      // Dispatch Namespace (Workers for Platforms) - requires account access to Workers for Platforms
+      // Uncomment after enabling at https://dash.cloudflare.com?to=/:account/workers-for-platforms
+      // "dispatch_namespaces": [
+      //   {
+      //     "binding": "DISPATCHER",
+      //     "namespace": "twin-user-dispatch",
+      //     "untrusted": true
+      //   }
+      // ],
+
+      "kv_namespaces": [
+        { "binding": "SESSIONS", "id": "f543586bcf0e40d897014dcd99b22f9d" },
+        { "binding": "PROFILES", "id": "6de1036969244fbf83e25e2404d508f1" },
+        { "binding": "RATE_LIMITS", "id": "c175822435ed48f0ac949dae880e92d0" }
+      ],
+
+      "r2_buckets": [
+        { "binding": "ASSETS", "bucket_name": "twin-user-assets" },
+        { "binding": "BACKUPS", "bucket_name": "twin-user-backups" }
+      ],
+
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "twin-user-db",
+          "database_id": "679a603e-4017-47d1-aac4-5a25badde454"
+        },
+        {
+          "binding": "AUDIT_DB",
+          "database_name": "twin-user-audit",
+          "database_id": "71f3d784-f52b-480e-8451-c9df44cb4062"
+        }
+      ],
+
+      "durable_objects": {
+        "bindings": [
+          { "name": "USER_DO", "class_name": "UserDurableObject" },
+          { "name": "MCP_AGENT", "class_name": "McpAgent" }
+        ]
+      }
+    }
+  },
+
+  "durable_objects": {
+    "bindings": [
+      { "name": "USER_DO", "class_name": "UserDurableObject" },
+      { "name": "MCP_AGENT", "class_name": "McpAgent" }
+    ]
+  },
+
+  "migrations": [
+    { "tag": "v1", "new_classes": ["McpAgent", "UserDurableObject"] }
+  ]
+}

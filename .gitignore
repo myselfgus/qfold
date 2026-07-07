@@ -1,0 +1,37 @@
+# Dependencies
+node_modules/
+
+# Cloudflare / Wrangler local state
+.wrangler/
+dist/
+build/
+
+# Secrets & environment
+.env
+.env.*
+!.env.example
+.dev.vars
+.dev.vars.*
+*.pem
+secrets/
+wrangler.jsonc.backup
+
+# Logs
+*.log
+npm-debug.log*
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Local only
+*.local
+wrangler.toml.local

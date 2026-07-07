@@ -1,0 +1,10 @@
+{
+  "name": "twin-user-outbound",
+  "main": "src/outbound-worker.ts",
+  "compatibility_date": "2025-07-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "tsconfig": "tsconfig.json",
+  "vars": {
+    "ALLOWED_EGRESS_DOMAINS": "api.openai.com,api.anthropic.com,api.groq.com"
+  }
+}
